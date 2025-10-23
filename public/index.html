@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iPhone Screen Mirror</title>
+    <style>
+      html, body {
+        margin: 0;
+        height: 100%;
+        background-color: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      #frame {
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 10px;
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+      }
+      #status {
+        position: fixed;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #0f0;
+        font-family: monospace;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="status">Waiting for frames...</div>
+    <img id="frame" />
+    <script>
+      const status = document.getElementById("status");
+      const frame = document.getElementById("frame");
+
+      const wsUrl = location.origin.replace("http", "ws");
+      const ws = new WebSocket(wsUrl);
+
+      ws.onopen = () => (status.textContent = "✅ Connected – waiting for stream...");
+      ws.onmessage = (event) => {
+        frame.src = event.data;
+        status.textContent = "📡 Receiving frames...";
+      };
+      ws.onclose = () => (status.textContent = "❌ Disconnected");
+    </script>
+  </body>
+</html>
